@@ -26,7 +26,7 @@ dataframe["race"] = dataframe["race"].astype("category")
 dataframe["sex"] = dataframe["sex"].astype("category")
 dataframe["native_country"] = dataframe["native_country"].astype("category")
 cat_columns = dataframe.select_dtypes(["category"]).columns
-dataframe[cat_columns] = dataframe[cat_columns].apply(lambda x: x.cat.codes) # x: a Series in dataframe
+dataframe[cat_columns] = dataframe[cat_columns].apply(lambda x: x.cat.codes)  # x: a Series in dataframe
 label = label.astype("category")
 label = label.cat.codes
 # drop column "education"
