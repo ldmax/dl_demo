@@ -13,7 +13,7 @@ Created on Thu Feb 22 21:10:36 2018
 ##################################
 
 # reading data
-dataframe = pd.read_csv("train.csv")
+dataframe = pd.read_csv("../train.csv")
 label = dataframe["income"]
 dataframe.drop(["income"], axis=1, inplace=True)
 
