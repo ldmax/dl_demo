@@ -39,16 +39,15 @@ $$L(\theta)$$
 是loss function，在本问题中也就是
 $$-lnL_\theta(x)$$
 由logistic回归笔记中的推导有：
-$$\frac {\partial}{\partial \theta_j} \left[-lnL_\theta(x) \right]=\sum_{i=1}^n -\left(\hat y_i - f_\theta(x^{(i)})\right)x^{(i)}_j$$
-其中$$f_\theta(x)$$
-就是Sigmoid函数。若记$$f_\theta(x^{(i)})-\hat y_i$$为$$loss_i$$，那么上式可以改写为：
-$$\frac {\partial}{\partial \theta_j} \left[-lnL_\theta(x) \right]=\sum_{i=1}^n loss_i \cdot x^{(i)}_j$$
+$$\frac{\partial}{\partial\theta_j}\left[-lnL_\theta(x)\right]=\sum_{i=1}^n-\left(\hat y_i-f_\theta(x^{(i)})\right)x^{(i)}_j$$
+其中$f_\theta(x)$就是Sigmoid函数。若记$f_\theta(x^{(i)})-\hat y_i$为$loss_i$，那么上式可以改写为：
+$$\frac{\partial}{\partial\theta_j}\left[-lnL_\theta(x)\right]=\sum_{i=1}^nloss_i\cdotx^{(i)}_j$$
 $\theta$是(m+1)x1的向量，m是特征个数。x是nxm的矩阵，n是数据条数，m是特征数。那么：
-$$\nabla \left[-lnL_\theta(x) \right]=X^\mathrm{T} \cdot \vec{loss}$$
+$$\nabla\left[-lnL_\theta(x)\right]=X^\mathrm{T}\cdot\vec{loss}$$
 因此参数更新表达式：
-$$\vec{\theta} \leftarrow \vec{\theta} - \eta \cdot X^\mathrm{T} \cdot \vec{loss}$$
+$$\vec{\theta}\leftarrow\vec{\theta}-\eta\cdotX^\mathrm{T}\cdot\vec{loss}$$
 此处学习速率
-$$\eta$$仍然使用Adagrad算法。
+$\eta$仍然使用Adagrad算法。
 # 5. 代码
 见logistic_regression.py
 # 6. 讨论
