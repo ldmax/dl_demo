@@ -1,5 +1,5 @@
-﻿<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
-# 1. 问题简述
+﻿# 1. 问题简述
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
 使用台湾中央气象局丰原站的真实数据建立模型，给出连续9小时的18种指标，预测第10小时的PM2.5数值。
 给出的数据包括3个文件：train.csv/test.csv/sampleSubmission.csv。train.csv的数据用于训练模型，test.csv的数据用于验证模型效果，sampleSubmission.csv是最终提交结果的格式。
 注：不考虑特征选择或者特征提取，认为第10次连续测量的PM2.5值只与前9次连续测量的PM2.5值有关。
