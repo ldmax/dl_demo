@@ -13,7 +13,7 @@ x向：编号/测项/连续的9个小时
 y向：18个指标
 # 2. 模型
 只考虑最简单的特征，即认为第10个小时的PM2.5数值只跟前9小时的PM2.5有关，并且考虑线性的模型，那么模型如下：
-![](http://latex.codecogs.com/gif.latex?h_\\theta(x)=\\sum_{i=0}^m\\theta_i x_i)
+![](http://latex.codecogs.com/gif.latex?h_\\theta(x)=\\sum_{i=0}^m\\theta_ix_i)
 其中$x_0=1$，n=9。
 # 3. 损失函数
 $$L(\theta)=\frac {1}{2} \sum_{i=1}^m \left[h_\theta(x^{(i)})-y_i\right]^2$$
