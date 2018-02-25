@@ -37,7 +37,7 @@ $$\vec{\theta} \leftarrow \vec{\theta} - \eta \nabla L(\theta)$$
 这里的
 $L(\theta)$是loss function，在本问题中也就是$-lnL_\theta(x)$。
 由logistic回归笔记中的推导有：
-$$\frac {\partial}{\partial \theta_j} \left[-lnL_\theta(x) \right]=\sum_{i=1}^n-\left(\hat y_i-f_\theta(x^{(i)}) \right)x^{(i)}_j$$
+$$\frac {\partial}{\partial \theta_j} \left[-lnL_\theta(x) \right]=\sum_{i=1}^n-\left(\hat y_i-f_\theta(x^{(i)})\right)x_j^{(i)}$$
 其中$f_\theta(x)$就是Sigmoid函数。若记$f_\theta(x^{(i)})-\hat y_i$为$loss_i$，那么上式可以改写为：
 $$\frac {\partial}{\partial \theta_j}\left[-lnL_\theta(x) \right]=\sum_{i=1}^n loss_i \cdot x^{(i)}_j$$
 $\theta$是(m+1)x1的向量，m是特征个数。x是nxm的矩阵，n是数据条数，m是特征数。那么：
