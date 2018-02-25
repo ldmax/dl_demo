@@ -53,7 +53,7 @@ def data_prepare(path):
     x = dataframe.as_matrix()
     return x, y
 ##################################
-#    logistic regression
+#    logistic HW1
 ##################################
 
 # using adagrad to adapt learning rate
@@ -108,7 +108,7 @@ income = np.array(income)
 
 y_for = pd.read_csv("https://ntumlta.github.io/2017fall-ml-hw2/correct_answer.csv")
 y_for.label = income
-y_for["label"] = y_for["label"].apply(lambda x: 1 if x>0.9 else 0)
+y_for["label"] = y_for["label"].apply(lambda x: 1 if x > 0.9 else 0)
 
 y_real = pd.read_csv("https://ntumlta.github.io/2017fall-ml-hw2/correct_answer.csv")
 err = abs(y_for.label-y_real.label).sum()/len(y_real.label)
