@@ -3,19 +3,30 @@
 import numpy as np
 import pandas as pd
 import math
+from sklearn import preprocessing
 
 """
 Created on Thu Feb 22 21:10:36 2018
 
 @author: lidan
 """
-
 ##################################
 #    data preparation
 ##################################
 
 
 def data_prepare(path):
+    """
+        从path读取csv数据，将categorical数据转为连续的整数，然后用OneHotEncoder
+        再编码。将连续型数据用除以列最大值的方式scaling，然后合并连续型和categorical
+        数据。
+    Args:    
+        path 读取csv数据的路径，可以是本地路径或网址
+    Returns:
+        data_cat DataFrame 返回的categorical数据
+        dataframe DataFrame 返回的连续型数据
+        y Series 返回的label数据
+    """
     # reading data
     dataframe = pd.read_csv(path)
     
@@ -27,39 +38,59 @@ def data_prepare(path):
     dataframe["race"] = dataframe["race"].astype("category")
     dataframe["sex"] = dataframe["sex"].astype("category")
     dataframe["native_country"] = dataframe["native_country"].astype("category")
+    dataframe["education"] = dataframe["education"].astype("category")
     if len(dataframe.columns) == 15:
         dataframe["income"] = dataframe["income"].astype("category")
-
+    
     cat_columns = dataframe.select_dtypes(["category"]).columns
     dataframe[cat_columns] = dataframe[cat_columns].apply(lambda x: x.cat.codes)  # x: a Series in dataframe
-    # drop column "education"
-    dataframe.drop(["education"], axis=1, inplace=True)
-    
+    data_cat = dataframe[cat_columns]
+    dataframe.drop(cat_columns, axis=1, inplace=True)
+    # drop column "education_num"
+    dataframe.drop(["education_num"], axis=1, inplace=True)
     y = np.zeros((dataframe.shape[0], 1))
-    if len(dataframe.columns) == 14:
-        y = dataframe["income"].as_matrix()
-        dataframe.drop(["income"], axis=1, inplace=True)
+    if len(data_cat.columns) == 9:
+        y = data_cat["income"].as_matrix()
+        data_cat.drop(["income"], axis=1, inplace=True)
     
-    # scaling and normalization for multi-feature data set
-    # scaling: divided by max value of the column
-    for column in dataframe.columns:
-        dataframe[column] = dataframe[column] / dataframe[column].max()
-    
-    # normalization: each column minus its mean value then divided by its standard variation
-    # for column in dataframe.columns:
-    #     dataframe[column] = (dataframe[column] - dataframe[column].mean()) / dataframe[column].std()
-    
-    # convert DataFrame to ndarray so that matrix manipulation can be conveyed
-    x = dataframe.as_matrix()
-    return x, y
-##################################
-#    logistic HW1
-##################################
+    return data_cat, dataframe, y
 
-# using adagrad to adapt learning rate
+
+data_cat_train, data_cont_train, y_train = data_prepare("D:/lihongyi/dl/classification/dl_demo/HW2/train.csv")
+data_cat_test, data_cont_test, y_test = data_prepare("D:/lihongyi/dl/classification/dl_demo/HW2/test.csv")
+data_cat = pd.concat([data_cat_train, data_cat_test], axis=0)
+# use OneHotEncoder to fit merged categorical data
+encoder = preprocessing.OneHotEncoder()
+encoder.fit(np.array(data_cat))
+x_cat_train = encoder.transform(data_cat_train).toarray()
+x_cat_test = encoder.transform(data_cat_test).toarray()
+
+# before concatenating, normalize continuous data
+for column in data_cont_train:
+    data_cont_train[column] = data_cont_train[column] / data_cont_train[column].max()
+    data_cont_test[column] = data_cont_test[column] / data_cont_test[column].max()
+
+# concatenate categorical data and continuous data
+x_cont_train = data_cont_train.as_matrix()
+x_cont_test = data_cont_test.as_matrix()
+x_train = np.hstack((x_cont_train, x_cat_train))
+x_test = np.hstack((x_cont_test, x_cat_test))
+##################################
+#    logistic regression
+##################################
 
 
 def gradient_decent(lr, iteration, x, y):
+    """
+    梯度下降
+    Args:
+        lr: int learning rate初始值
+        iteration: int 迭代次数
+        x: ndarray 训练数据矩阵
+        y: ndarray 标签数组
+    Returns:
+        w: 训练完成的参数向量
+    """
     w = np.zeros((len(x[0])))  # parameter vector initialization
     s_grad = np.zeros(len(x[0]))
     
@@ -81,12 +112,10 @@ def gradient_decent(lr, iteration, x, y):
 ##################################
 
 
-x, y = data_prepare("https://ntumlta.github.io/2017fall-ml-hw2/raw_data/train.csv")
-x = np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)  # adding bias
+x_train = np.concatenate((np.ones((x_train.shape[0], 1)), x_train), axis=1)  # adding bias
 lr = 10  # learning rate initialization
 iteration = 10000
-w = gradient_decent(lr, iteration, x, y)
-
+w = gradient_decent(lr, iteration, x_train, y_train)
 ##################################
 #       test
 ##################################
@@ -96,7 +125,6 @@ def sigmoid(z):
     return 1 / (1 + math.exp(-z))
 
 
-x_test, y_test = data_prepare("https://ntumlta.github.io/2017fall-ml-hw2/raw_data/test.csv")
 x_test = np.concatenate((np.ones((x_test.shape[0], 1)), x_test), axis=1)  # adding bias
 z_test = np.dot(x_test, w)
 income = []
@@ -106,11 +134,32 @@ for i in z_test.flat:
 income = np.array(income)
 # error calculation
 
-y_for = pd.read_csv("https://ntumlta.github.io/2017fall-ml-hw2/correct_answer.csv")
+y_for = pd.read_csv("D:/lihongyi/dl/classification/dl_demo/HW2/correct_answer.csv")
 y_for.label = income
 y_for["label"] = y_for["label"].apply(lambda x: 1 if x > 0.9 else 0)
 
-y_real = pd.read_csv("https://ntumlta.github.io/2017fall-ml-hw2/correct_answer.csv")
-err = abs(y_for.label-y_real.label).sum()/len(y_real.label)
+y_real = pd.read_csv("D:/lihongyi/dl/classification/dl_demo/HW2/correct_answer.csv")
+
+
+def distance(vec1, vec2=None):
+    """
+    求向量v1和向量v2的欧氏距离
+    Args:
+        vec1: ndarray 向量1
+        vec2: ndarray 向量2
+    Returns:
+        dist float vec1和vec2的欧氏距离
+    """
+    dist = 0
+    if vec2 is not None:
+        dist = np.sqrt(np.sum(np.square(vec1) - np.square(vec2)))
+    else:
+        dist = np.sqrt(np.sum(np.square(vec1)))
+    return dist
+
+
+dist_err = distance(y_for.label, y_real.label)
+dist = distance(y_real.label)
+err = dist_err / dist
 print(err)
 
