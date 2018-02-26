@@ -80,6 +80,10 @@ x_test = np.hstack((x_cont_test, x_cat_test))
 ##################################
 
 
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+
 def gradient_decent(lr, iteration, x, y):
     """
     梯度下降
@@ -98,10 +102,10 @@ def gradient_decent(lr, iteration, x, y):
         z = np.dot(x, w)
         temp = []
         for j in z.flat:
-            temp.append(1/(1+math.exp(j)))  # Sigmoid function
+            temp.append(sigmoid(j))  # Sigmoid function
     
         loss = temp - y
-        grad = np.dot(x.transpose(), loss) * (-1)
+        grad = np.dot(x.transpose(), loss)
         s_grad += grad**2
         ada = np.sqrt(s_grad)
         w = w - (lr/ada) * grad
@@ -119,12 +123,6 @@ w = gradient_decent(lr, iteration, x_train, y_train)
 ##################################
 #       test
 ##################################
-
-
-def sigmoid(z):
-    return 1 / (1 + math.exp(-z))
-
-
 x_test = np.concatenate((np.ones((x_test.shape[0], 1)), x_test), axis=1)  # adding bias
 z_test = np.dot(x_test, w)
 income = []
@@ -136,7 +134,7 @@ income = np.array(income)
 
 y_for = pd.read_csv("D:/lihongyi/dl/classification/dl_demo/HW2/correct_answer.csv")
 y_for.label = income
-y_for["label"] = y_for["label"].apply(lambda x: 1 if x > 0.9 else 0)
+y_for["label"] = y_for["label"].apply(lambda x: 1 if x > 0.5 else 0)
 
 y_real = pd.read_csv("D:/lihongyi/dl/classification/dl_demo/HW2/correct_answer.csv")
 
