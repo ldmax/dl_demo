@@ -101,7 +101,7 @@ def gradient_decent(lr, iteration, x, y):
             temp.append(1/(1+math.exp(j)))  # Sigmoid function
     
         loss = temp - y
-        grad = np.dot(x.transpose(), loss)*(-2)
+        grad = np.dot(x.transpose(), loss) * (-1)
         s_grad += grad**2
         ada = np.sqrt(s_grad)
         w = w - (lr/ada) * grad
@@ -141,25 +141,37 @@ y_for["label"] = y_for["label"].apply(lambda x: 1 if x > 0.9 else 0)
 y_real = pd.read_csv("D:/lihongyi/dl/classification/dl_demo/HW2/correct_answer.csv")
 
 
-def distance(vec1, vec2=None):
+def f1_measure(ans, pre):
     """
-    求向量v1和向量v2的欧氏距离
+    计算分类问题的F1-measure
     Args:
-        vec1: ndarray 向量1
-        vec2: ndarray 向量2
+        ans ndarray 正确答案
+        pre ndarray 预测
     Returns:
-        dist float vec1和vec2的欧氏距离
+        accuracy float 准确率
     """
-    dist = 0
-    if vec2 is not None:
-        dist = np.sqrt(np.sum(np.square(vec1) - np.square(vec2)))
-    else:
-        dist = np.sqrt(np.sum(np.square(vec1)))
-    return dist
+    if len(ans) == len(pre):
+        length = len(ans)
+        tp = 0
+        fp = 0
+        fn = 0
+        for i in range(length):
+            # 计算True Positive的数量
+            if ans[i] == 1 and pre[i] == 1:
+                tp += 1
+            # 计算False Positive的数量
+            elif ans[i] == 0 and pre[i] == 1:
+                fp += 1
+            # 计算False Negative的数量
+            elif ans[i] == 1 and pre[i] == 0:
+                fn += 1
+        
+        p = tp / (tp + fp)  # precision
+        r = tp / (tp + fn)  # recall
 
+        return 2*p*r / (p + r)  # F1-measure
+            
 
-dist_err = distance(y_for.label, y_real.label)
-dist = distance(y_real.label)
-err = dist_err / dist
-print(err)
+f1 = f1_measure(np.array(y_real.label), np.array(y_for.label))
+print(f1)
 
